@@ -1,6 +1,5 @@
 MDRI
 ====
-
 A Multiple Database RESTful Interface
 
 This is a RESTful interface for a PostgreSQL database.
@@ -18,35 +17,35 @@ The interface will return all information in JSON.
 ###Level 0 (Server)
 A Server resource is a particular type of resource, it contains the list of databases (that user can see)  on the server.
 It's possible to return a JSON array with a list of all database with :
-''' http
+```
 HTTP GET www.example.com
-'''
+```
 Where example.com would be the server upon which your PostgreSQL is running.
 
 ###Level 1 (Database)
 Will list all tables in specified database:
-'''
+```
 HTTP GET www.example.com/example-db
-'''
+```
 It's possible to delete a database:
-'''
+```
 HTTP DELETE www.example.com/example-db
-'''
+```
 ####WARNING!! Deleting a database could be very annoying. Using a detele method on a database should be turned off (and this is the default setting) in the interface configuration file.
 
 ###Level 2 (Table)
 To get a list of all entries in a table:
-'''
+```
 HTTP GET www.example.com/example-db/example-table
-'''
+```
 Delete a table with:
-'''
+```
 HTTP DELETE www.example.com/example-db/example-table
-'''
+```
 It's possible to read from multuple tables (like doing a CROSS JOIN between them):
-'''
+```
 HTTP GET www.example.com/example-db/example-table1,example-table2,example-table3
-'''
+```
 Separating them with a ","
 
 ##The MDRI database
@@ -65,9 +64,9 @@ Virtual tables should have unique names, and how to create them should be stored
 
 ###The MDRI_joins table
 The MDRI_joins should be like this_
-'''
+```
 | join_name(PK) | join_table1 | join_table2 | join_condition | join_database | join_type
-'''
+```
 where_
 	- join_name : the name of the virtual table
 	- join_table1 : the first table used for the join
@@ -81,75 +80,75 @@ For example (a really bad example):
 
 ##Level 3 (Entry)
 To get a specified entry in a table:
-'''
+```
 HTTP GET www.example.com/example-db/example-table/PK
-'''
+```
 Or fror delete :
-'''
+```
 HTTP DELETE www.example.com/example-db/example-table/PK
-'''
+```
 If table has composed PK:
-'''
+```
 HTTP GET www.example.com/example-db/example-table/PK1;PK2;PK3
-'''
+```
 For delete:
-'''
+```
 HTTP DELETE www.example.com/example-db/example-table/PK1;PK2;PK3
-'''
+```
 In this case the order of the Pk's should be the order defined in the DB.
 If you don't care about a field you can use the reserved character '*' this means "each".
 If you want it's possible to specify the fields of the PK's:
-'''
+```
 HTTP GET www.example.com/example-db/example-table/PK-field1=PK1;PK-field2=PK2;PK-field3=PK3
-'''
+```
 For delete:
-'''
+```
 HTTP DELETE www.example.com/example-db/example-table/PK-field1=PK1;PK-field2=PK2;PK-field3=PK3
-'''
+```
 If you are using a virtual table:
-'''
+```
 HTTP GET www.example.com/example-db/virtual-table/PK-field1=PK1;PK-field2=PK2+PK-field3=PK3
-'''
+```
 Also here,for delete:
-'''
+```
 HTTP DELETE www.example.com/example-db/virtual-table/PK-field1=PK1;PK-field2=PK2+PK-field3=PK3
-'''
+```
 You should specify the PK's from the two (or more tables) that compose the virtual table and separate each group of Pks with a "+".
 In this case the table "virtual-table" is compose by two tables(like "table1" and "table2"), you are declaring PK1 for "PK-field1", and PK2 for "PK-field2" for "table1", and PK3 for "PK-field3" for "table2".
 Or for a cross join:
-'''
+```
 HTTP GET www.example.com/example-db/example-table1,example-table2,example-table3/PK1table1;PK2table1,PKtable2,PK1table3;PK2table3;PK3table3
-'''
+```
 Delete with:
-'''
+```
 HTTP DELETE www.example.com/example-db/example-table1,example-table2,example-table3/PK1table1;PK2table1,PKtable2,PK1table3;PK2table3;PK3table3
-'''
+```
 Separate each group of Pks with a "," like for tables.
 In this case table 1 has a PK composed by two field, table 2 by one, and table 3 by 3.
 
 ##Level 4 (Attribute)
 ###WARNING!!! YOU CANNOT USE DELETE METHOD INSIDE LEVEL 4 (IT DOESN'T MAKE SENSE...).
 In the case you want to return only a specified value of a entry you can do that with:
-'''
+```
 HTTP GET www.example.com/example-db/example-table/PK/attrib1;attrib2;attrib3
-'''
+```
 ###In this case you should specify the name of the field with "attrib1" not the value
 This will return you the JSON representation of attrib1, attrib2 and, attrib3 from the entry with the primary key=PK.
 If you are using multiple tables (CROSS JOIN):
-'''
+```
 HTTP GET www.example.com/example-db/example-table1,example-table2,example-table3/PK1table1+PK2table1;PKtable2;PK1table3+PK2table
 3+PK3table3/attrib1;attrib2,*,attrib1
-'''
+```
 In this case you will get "attrib1" and "attrib2" from "example-table1", all attributes from "example-table2", and "attrib1" from "example-table3".
 For a virtual table:
-'''
+```
 HTTP GET www.example.com/example-db/virtual-table/PK-field1=PK1;PK-field2=PK2+PK-field3=PK3/attrib1+attrib1;attrib2
-'''
+```
 Extracting "attrib1" from "table1", and "attrib1" and "attrib2" from "table2" (assuming that "virtual-table" is composed by the join from "table1" and "table").
 If you want to estract some values from all entries of a table:
-'''
+```
 HTTP GET www.example.com/example-db/example-table/*/attrib1;attrib2;attrib3;etc;etc
-'''
+```
 
 #ADVANCED EXTRAPOLATION (USE AT YOU OWN RISK)
 PostgreSQL has a lot of functions, I know that is "impossible" to make a RESTful interface that use all of them.
@@ -226,22 +225,22 @@ You can also modify a value with the default:
  
 ####All of these fields are case insensitive
 For example, create new DB with PUT:
-'''
+```
 HTTP PUT  www.example.com/<DB-name>
 --- PUT BODY ---
 OWNER=Smith
 ENCODING=UTF8
 CONNECTION LIMIT=1011
-'''
+```
 
 Or with POST:
-'''
+```
 HTTP POST www.example.com/<hash>
 --- POST BODY ---
 DATABASENAME=<DB-name>
 OWNER=Smith
 ENCODING=UTF8
-'''
+```
 
 ##Level 1/2 TABLE
 New values for columns should be listed:
@@ -255,15 +254,15 @@ For a table can be used some "extra actions" as:
 There is no limit for extra actions, you can use all of PostgreSQL features.
 ###WARNING!! THE INTERFACE HAS NO CONTROL FOR THE EXTRA ACTIONS, THERE ARE SO MANY FEATURES IN POSTGRESQL... IT'S IMPOSSIBLE CHECK THEM ALL WITHOUT LIMIT THE INTERFACE'S FEATURES.
 Extra actions should be separed with a "extraactions" string, and listed like this:
-'''
+```
 <column_name>=<column_value>
 <column_name>=<column_value>
 extraactions
 CONSTRAINT=<value>
 ENABLE RULE=<value>
-'''
+```
 A tipical PUT request should have the table name in the URI. A POST should specify the name of the new table with:
-'''
+```
 tablename=<name_of_new_table>
 
 You can use PUT and POST also for modify, in this case you could need to delete a column.
@@ -274,43 +273,43 @@ A column can be delete writing some reserved values inside a <column_value> fiel
 
 ##Level 2/3 ENTRY
 Rules for PUT method URI are the same for GET and DELETE; Creating a new row with composed PK :
-'''
+```
 HTTP PUT www.example.com/table/PK1;PK2;PK3
 HTTP PUT www.example.com/table/pk_field1=PK1;pk_field2=PK2;pk_field3=PK3
-'''
+```
 In a POST request instead all PK fields should be inserted in the request body:
-'''
+```
 --- POST BODY ---
 pk_field1=PK1
 pk_field2=PK2
 pk_field3=PK3
-'''
+```
 In the request body you should also always list all NOT NULL fields.
 For modify a row the rules are the same (but in this case NOT NULL fields can be ignored).
 
 #HEAD
 The URI rules for a HEAD method are the same for GET. Using HEAD the interface will return you the information about the lenght of a GET request without the informations.
 A example of a  tipical HEAD request:
-'''
+```
 HTTP HEAD www.example.com/table/PK
-'''
+```
 And his response:
-'''
+```
 HTTP/1.1 200 OK
 Date:1 March 2013 9:34:45 GMT
 Server: ...
 Last-Modified: ...
 Content-Lenght: 48531
-'''
+```
 If you'll make a HTTP GET request with the same URI the interface will return you 48531 bytes of body.
 
 A HEAD method can be also used for the POI feature of the interface.
 In this case inside the HEAD request body you have use a header named POE with value "1".
-'''
+```
 --- LIST OF REQUEST HEADERS ---
 POE=1
 --- END OF HEADERS ---
-'''
+```
 
 #THE POE FEATURE
 All method HEAD, GET, DELETE, PUT are idempotent but POST method isn't.
