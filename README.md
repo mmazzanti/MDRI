@@ -18,7 +18,7 @@ The interface will return all information in JSON.
 ###Level 0 (Server)
 A Server resource is a particular type of resource, it contains the list of databases (that user can see)  on the server.
 It's possible to return a JSON array with a list of all database with :
-'''
+''' http
 HTTP GET www.example.com
 '''
 Where example.com would be the server upon which your PostgreSQL is running.
